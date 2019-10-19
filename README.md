@@ -1,2 +1,1 @@
-# CS171CheckersAI
-Creating an AI to play checkers
+# CS-171 Checkers Project
