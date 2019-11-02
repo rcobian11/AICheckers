@@ -41,7 +41,9 @@ class StudentAI():
                 else:
                     best = (0,0)
                 self.board.undo()
-        self.board.make_move(moves[best[0]][best[1]],self.color)
+        move = moves[best[0]][best[1]]
+        self.board.make_move(move,self.color)
+        return move
 
 '''
     def get_move(self,move):
