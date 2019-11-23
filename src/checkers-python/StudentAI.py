@@ -1,6 +1,7 @@
 from random import randint
 from BoardClasses import Move
 from BoardClasses import Board
+import random
 import math
 import logging
 logging.basicConfig(filename='log_filename.txt', level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -16,6 +17,7 @@ class StudentAI():
         self.color = ''
         self.opponent = {1:2,2:1}
         self.color = 2
+        self.startPieces = self.num_pieces(self.color) * 2
 
     def num_pieces(self, color):
         if color == 1:
@@ -26,7 +28,7 @@ class StudentAI():
 
     def get_max(self,depth,iterations):
         opp_color = self.opponent[self.color]
-        #best = (0,0)
+        best = (0,0)
         if depth == iterations:
             moves = self.board.get_all_possible_moves(self.color)
             opponent_pieces = self.num_pieces(opp_color) #number of opponent pieces before our move
@@ -38,10 +40,11 @@ class StudentAI():
                     temp = opponent_pieces - self.num_pieces(opp_color)
                     if temp > we_eat:
                         we_eat = temp
-                        #best = (x,v)
+                        best = (x,v)
                     self.board.undo()
-            return (we_eat,0)
+            return (we_eat,best)
         else:
+            best = (0,0)
             moves = self.board.get_all_possible_moves(self.color)
             max = -(self.num_pieces(self.color))
             our_pieces = self.num_pieces(self.color) # our pieces before our move
@@ -56,6 +59,7 @@ class StudentAI():
                         if(randint(0,1)):
                             best = (i,j)
                     self.board.undo()
+            logging.info(best)
             return(max,best)
 
     def get_min(self, depth, iterations):
@@ -87,12 +91,28 @@ class StudentAI():
 
     def get_move(self,move):
         opp_color = self.opponent[self.color]
+        tot_pieces = self.num_pieces(self.color) + self.num_pieces(opp_color)
         if len(move) != 0:
             self.board.make_move(move,self.opponent[self.color])
         else:
             self.color = 1
         moves = self.board.get_all_possible_moves(self.color)
-        max,best = self.get_max(1,5)
+        max1,best1 = self.get_max(1,1)
+        max2,best2 = self.get_max(1,3)
+        max3,best3 = self.get_max(1,5)
+
+        piece_prob = (tot_pieces/self.startPieces)/1.3
+        if piece_prob
+        probs = [prob1, prob2, prob3]
+        bestl = [best1,best2,best3]
+        r = random.random()
+        index = 0
+        while(r >= 0 and index < len(probs)):
+          r -= probs[index]
+          index += 1
+        best = bestl[index-1]
+
+
         '''
         if max == 0 and len(self.board.get_all_possible_moves(opp_color)) < 3:
             ## Idea to improve choice, if max is tied look at the move which will get us closes
