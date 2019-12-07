@@ -92,7 +92,7 @@ class StudentAI():
         else:
             self.color = 1
         moves = self.board.get_all_possible_moves(self.color)
-        max,best = self.get_max(1,5)
+        max,best = self.get_max(1,3)
         '''
         if max == 0 and len(self.board.get_all_possible_moves(opp_color)) < 3:
             ## Idea to improve choice, if max is tied look at the move which will get us closes
