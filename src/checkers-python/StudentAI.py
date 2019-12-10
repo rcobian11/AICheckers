@@ -1,4 +1,5 @@
 from random import randint
+import random
 from BoardClasses import Move
 from BoardClasses import Board
 import math
@@ -16,6 +17,7 @@ class StudentAI():
         self.color = ''
         self.opponent = {1:2,2:1}
         self.color = 2
+        self.startPieces = self.num_pieces(self.color) * 2
 
     def num_pieces(self, color):
         if color == 1:
@@ -26,7 +28,7 @@ class StudentAI():
 
     def get_max(self,depth,iterations):
         opp_color = self.opponent[self.color]
-        #best = (0,0)
+        best = (0,0)
         if depth == iterations:
             moves = self.board.get_all_possible_moves(self.color)
             opponent_pieces = self.num_pieces(opp_color) #number of opponent pieces before our move
@@ -38,9 +40,15 @@ class StudentAI():
                     temp = opponent_pieces - self.num_pieces(opp_color)
                     if temp > we_eat:
                         we_eat = temp
-                        #best = (x,v)
+                        best = (x,v)
+                    elif temp == we_eat:
+                        if(randint(0,1)):
+                            best = (x,v)
                     self.board.undo()
-            return (we_eat,0)
+            if (iterations == 1):
+                return (0,best)
+            else:
+                return (we_eat,0)
         else:
             moves = self.board.get_all_possible_moves(self.color)
             max = -(self.num_pieces(self.color))
@@ -87,26 +95,34 @@ class StudentAI():
 
     def get_move(self,move):
         opp_color = self.opponent[self.color]
+        tot_pieces = self.num_pieces(self.color) + self.num_pieces(opp_color)
         if len(move) != 0:
             self.board.make_move(move,self.opponent[self.color])
         else:
             self.color = 1
         moves = self.board.get_all_possible_moves(self.color)
-        max,best = self.get_max(1,3)
-        '''
-        if max == 0 and len(self.board.get_all_possible_moves(opp_color)) < 3:
-            ## Idea to improve choice, if max is tied look at the move which will get us closes
-            ## closest to opponent piece
-            inner = i
-            distance = 100
-            checker = self.board.get_all_possible_moves(opp_color)
-            opp_checker = checker[0][0].seq[0]
-            #for i,checker in enumerate(moves1):
-            for j,move in enumerate(moves1[0]):
-                temp_dist = math.sqrt(sum([(a - b) ** 2 for a, b in zip(move[0], opp_checker)]))
-                if temp_dist < distance:
-                    best = (0,j)
-        '''
+        max1,best1 = self.get_max(1,5)
+        max2,best2 = self.get_max(1,3)
+        max3,best3 = self.get_max(1,1)
+
+        if(tot_pieces > self.startPieces*.80):
+            probs = [.30, .60, .10]
+        elif(tot_pieces <= self.startPieces*.80 or tot_pieces > self.startPieces*.25):
+            probs = [.15, .75, .10]
+        else:
+            probs = [.10, .65, .25]
+        
+        
+        bestl = [best1,best2,best3]
+        r = random.random()
+        index = 0
+        while(r >= 0 and index < len(probs)):
+          r -= probs[index]
+          index += 1
+        best = bestl[index-1]
+        logging.info(index-1)
+        logging.info(bestl)
+        
         move = moves[best[0]][best[1]]
         self.board.make_move(move,self.color)
         return move
